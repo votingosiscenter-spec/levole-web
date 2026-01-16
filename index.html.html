@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard OSIS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%);
+    }
+    
+    .card-gradient {
+      background: linear-gradient(145deg, #1e3a5f 0%, #2d4a6f 100%);
+    }
+    
+    .glow-effect {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    .chat-bubble {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .loading-dot {
+      animation: pulse 1.5s infinite;
+    }
+    
+    .menu-item:hover {
+      transform: translateX(5px);
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.5);
+      border-radius: 3px;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full gradient-bg text-white overflow-auto">
+  <div id="app" class="h-full w-full"><!-- Login Page -->
+   <div id="loginPage" class="h-full w-full flex items-center justify-center p-4">
+    <div class="card-gradient rounded-3xl p-8 w-full max-w-md glow-effect">
+     <div class="text-center mb-8">
+      <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+       <svg class="w-12 h-12" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+       </svg>
+      </div>
+      <h1 id="loginTitle" class="text-3xl font-bold mb-2">Dashboard OSIS</h1>
+      <p class="text-blue-200 text-sm">Masuk untuk melanjutkan</p>
+     </div>
+     <form id="loginForm" class="space-y-6">
+      <div><label class="block text-sm font-medium text-blue-200 mb-2">Nama Lengkap</label> <input type="text" id="userName" required placeholder="Masukkan nama Anda" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
+      </div><button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl font-semibold transition-all transform hover:scale-[1.02] active:scale-[0.98]"> Masuk ke Dashboard </button>
+     </form>
+    </div>
+   </div><!-- Dashboard Page -->
+   <div id="dashboardPage" class="h-full w-full hidden"><!-- Header -->
+    <header class="bg-black/20 backdrop-blur-sm border-b border-white/10 px-4 py-3">
+     <div class="flex items-center justify-between max-w-7xl mx-auto">
+      <div class="flex items-center gap-3">
+       <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        </svg>
+       </div>
+       <h1 id="dashboardTitle" class="text-xl font-bold">Dashboard OSIS</h1>
+      </div>
+      <div class="flex items-center gap-3"><span id="welcomeUser" class="text-sm text-blue-200"></span> <button id="logoutBtn" class="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg text-sm transition-colors"> Keluar </button>
+      </div>
+     </div>
+    </header>
+    <div class="flex h-[calc(100%-64px)]"><!-- Sidebar -->
+     <nav class="w-64 bg-black/20 backdrop-blur-sm border-r border-white/10 p-4 hidden md:block">
+      <ul class="space-y-2">
+       <li><button onclick="showSubmenu('chat')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all text-left" data-menu="chat"> <span class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">💬</span> <span class="font-medium">Chat OSIS</span> </button></li>
+       <li><button onclick="showSubmenu('search')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all text-left" data-menu="search"> <span class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">🔍</span> <span class="font-medium">Search OSIS Event</span> </button></li>
+       <li><button onclick="showSubmenu('gallery')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all text-left" data-menu="gallery"> <span class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">📸</span> <span class="font-medium">Rekap Galeri</span> </button></li>
+       <li><button onclick="showSubmenu('report')" class="menu-item w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all text-left" data-menu="report"> <span class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">🐛</span> <span class="font-medium">Report &amp; Bug</span> </button></li>
+      </ul>
+     </nav><!-- Mobile Navigation -->
+     <div class="md:hidden fixed bottom-0 left-0 right-0 bg-black/40 backdrop-blur-lg border-t border-white/10 px-2 py-2 z-50">
+      <div class="flex justify-around"><button onclick="showSubmenu('chat')" class="flex flex-col items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10 transition-all" data-menu="chat"> <span class="text-xl">💬</span> <span class="text-xs">Chat</span> </button> <button onclick="showSubmenu('search')" class="flex flex-col items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10 transition-all" data-menu="search"> <span class="text-xl">🔍</span> <span class="text-xs">Search</span> </button> <button onclick="showSubmenu('gallery')" class="flex flex-col items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10 transition-all" data-menu="gallery"> <span class="text-xl">📸</span> <span class="text-xs">Galeri</span> </button> <button onclick="showSubmenu('report')" class="flex flex-col items-center gap-1 px-3 py-2 rounded-lg hover:bg-white/10 transition-all" data-menu="report"> <span class="text-xl">🐛</span> <span class="text-xs">Report</span> </button>
+      </div>
+     </div><!-- Main Content -->
+     <main class="flex-1 p-4 md:p-6 overflow-auto pb-20 md:pb-6"><!-- Welcome Section -->
+      <div id="welcomeSection" class="text-center py-12">
+       <h2 id="welcomeText" class="text-2xl md:text-3xl font-bold mb-4">Selamat Datang di Dashboard OSIS</h2>
+       <p class="text-blue-200">Pilih menu di samping untuk memulai</p>
+      </div><!-- Chat OSIS -->
+      <div id="chatSection" class="hidden h-full">
+       <div class="card-gradient rounded-2xl h-full flex flex-col max-h-[700px]">
+        <div class="p-4 border-b border-white/10 bg-gradient-to-r from-blue-600/20 to-purple-600/20">
+         <div class="flex items-center justify-between">
+          <div>
+           <h2 class="text-xl font-bold flex items-center gap-2">💬 Chat OSIS <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span></h2>
+           <p class="text-sm text-blue-200">Asisten virtual 24/7 - Siap membantu Anda</p>
+          </div><button onclick="clearChat()" class="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-xs transition-colors flex items-center gap-1">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+           </svg> Hapus Chat </button>
+         </div>
+        </div><!-- Quick Reply Suggestions -->
+        <div id="quickReplies" class="p-3 border-b border-white/10 bg-white/5">
+         <p class="text-xs text-blue-200 mb-2">💡 Pertanyaan cepat:</p>
+         <div class="flex flex-wrap gap-2"><button onclick="sendQuickReply('Apa saja kegiatan OSIS?')" class="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 rounded-full text-xs transition-all hover:scale-105"> 📅 Kegiatan OSIS </button> <button onclick="sendQuickReply('Bagaimana cara daftar OSIS?')" class="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-xs transition-all hover:scale-105"> 📝 Cara Daftar </button> <button onclick="sendQuickReply('Kapan class meeting?')" class="px-3 py-1.5 bg-green-500/20 hover:bg-green-500/30 rounded-full text-xs transition-all hover:scale-105"> ⚽ Class Meeting </button> <button onclick="sendQuickReply('Info pentas seni')" class="px-3 py-1.5 bg-pink-500/20 hover:bg-pink-500/30 rounded-full text-xs transition-all hover:scale-105"> 🎭 Pentas Seni </button>
+         </div>
+        </div>
+        <div id="chatMessages" class="flex-1 p-4 overflow-y-auto scrollbar-thin space-y-4">
+         <div class="chat-bubble flex gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+           🤖
+          </div>
+          <div class="bg-gradient-to-r from-white/10 to-white/5 rounded-2xl rounded-tl-none px-4 py-3 max-w-[80%] shadow-lg border border-white/10">
+           <p class="text-sm leading-relaxed">Halo! 👋 Saya asisten OSIS virtual. Saya bisa membantu Anda dengan:</p>
+           <ul class="text-sm mt-2 space-y-1 ml-4">
+            <li>✨ Informasi kegiatan dan event</li>
+            <li>✨ Cara pendaftaran OSIS</li>
+            <li>✨ Struktur organisasi</li>
+            <li>✨ Jadwal dan agenda</li>
+           </ul>
+           <p class="text-sm mt-2">Silakan tanya apapun! 😊</p>
+          </div>
+         </div>
+        </div><!-- Typing Indicator -->
+        <div id="typingIndicator" class="hidden px-4 py-2">
+         <div class="flex items-center gap-2 text-sm text-blue-300">
+          <div class="flex gap-1"><span class="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></span> <span class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span> <span class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+          </div><span>Asisten sedang mengetik...</span>
+         </div>
+        </div>
+        <div class="p-4 border-t border-white/10 bg-white/5">
+         <form id="chatForm" class="flex gap-2"><button type="button" onclick="toggleEmojiPicker()" class="px-3 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"> 😊 </button>
+          <div class="flex-1 relative"><input type="text" id="chatInput" placeholder="Ketik pesan Anda di sini..." class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all" autocomplete="off">
+           <div id="emojiPicker" class="hidden absolute bottom-full mb-2 left-0 bg-gray-800 rounded-xl p-3 shadow-2xl border border-white/20 grid grid-cols-6 gap-2 max-w-xs"><button type="button" onclick="insertEmoji('😊')" class="hover:scale-125 transition-transform text-xl">😊</button> <button type="button" onclick="insertEmoji('👍')" class="hover:scale-125 transition-transform text-xl">👍</button> <button type="button" onclick="insertEmoji('❤️')" class="hover:scale-125 transition-transform text-xl">❤️</button> <button type="button" onclick="insertEmoji('🎉')" class="hover:scale-125 transition-transform text-xl">🎉</button> <button type="button" onclick="insertEmoji('🔥')" class="hover:scale-125 transition-transform text-xl">🔥</button> <button type="button" onclick="insertEmoji('💪')" class="hover:scale-125 transition-transform text-xl">💪</button> <button type="button" onclick="insertEmoji('👏')" class="hover:scale-125 transition-transform text-xl">👏</button> <button type="button" onclick="insertEmoji('🙏')" class="hover:scale-125 transition-transform text-xl">🙏</button> <button type="button" onclick="insertEmoji('🤔')" class="hover:scale-125 transition-transform text-xl">🤔</button> <button type="button" onclick="insertEmoji('😄')" class="hover:scale-125 transition-transform text-xl">😄</button> <button type="button" onclick="insertEmoji('😎')" class="hover:scale-125 transition-transform text-xl">😎</button> <button type="button" onclick="insertEmoji('🚀')" class="hover:scale-125 transition-transform text-xl">🚀</button>
+           </div>
+          </div><button type="submit" id="sendBtn" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-xl transition-all transform hover:scale-105 active:scale-95 shadow-lg">
+           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+           </svg></button>
+         </form>
+         <p class="text-xs text-center text-blue-300 mt-2">💡 Tip: Klik tombol saran di atas untuk pertanyaan cepat</p>
+        </div>
+       </div>
+      </div><!-- Search OSIS Event -->
+      <div id="searchSection" class="hidden">
+       <div class="card-gradient rounded-2xl p-6">
+        <h2 class="text-xl font-bold flex items-center gap-2 mb-4">🔍 Search OSIS Event</h2>
+        <p class="text-sm text-blue-200 mb-6">Cari informasi event dan kegiatan OSIS</p>
+        <form id="searchForm" class="mb-8">
+         <div class="flex gap-2"><input type="text" id="searchInput" placeholder="Cari event OSIS..." class="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-green-400"> <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 rounded-xl transition-colors font-medium"> Cari </button>
+         </div>
+        </form>
+        <div class="mb-6">
+         <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">✨ Saran Event Populer</h3>
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-3"><button onclick="searchEvent('Lomba Cerdas Cermat')" class="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-left"> <span class="text-2xl">🏆</span>
+           <div>
+            <p class="font-medium">Lomba Cerdas Cermat</p>
+            <p class="text-xs text-blue-200">Kompetisi antar kelas</p>
+           </div></button> <button onclick="searchEvent('Pentas Seni')" class="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-left"> <span class="text-2xl">🎭</span>
+           <div>
+            <p class="font-medium">Pentas Seni</p>
+            <p class="text-xs text-blue-200">Pertunjukan tahunan</p>
+           </div></button> <button onclick="searchEvent('Bakti Sosial')" class="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-left"> <span class="text-2xl">❤️</span>
+           <div>
+            <p class="font-medium">Bakti Sosial</p>
+            <p class="text-xs text-blue-200">Kegiatan sosial</p>
+           </div></button> <button onclick="searchEvent('Class Meeting')" class="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-left"> <span class="text-2xl">⚽</span>
+           <div>
+            <p class="font-medium">Class Meeting</p>
+            <p class="text-xs text-blue-200">Kompetisi olahraga</p>
+           </div></button> <button onclick="searchEvent('LDKS')" class="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-left"> <span class="text-2xl">🏕️</span>
+           <div>
+            <p class="font-medium">LDKS</p>
+            <p class="text-xs text-blue-200">Latihan Dasar Kepemimpinan</p>
+           </div></button> <button onclick="searchEvent('Upacara Bendera')" class="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-left"> <span class="text-2xl">🇮🇩</span>
+           <div>
+            <p class="font-medium">Upacara Bendera</p>
+            <p class="text-xs text-blue-200">Jadwal upacara rutin</p>
+           </div></button>
+         </div>
+        </div>
+        <div id="searchResults" class="hidden">
+         <h3 class="text-lg font-semibold mb-4">Hasil Pencarian</h3>
+         <div id="searchResultsContent" class="space-y-3"></div>
+        </div>
+       </div>
+      </div><!-- Rekap Galeri -->
+      <div id="gallerySection" class="hidden">
+       <div class="card-gradient rounded-2xl p-6">
+        <h2 class="text-xl font-bold flex items-center gap-2 mb-4">📸 Rekap Galeri Bersama</h2>
+        <p class="text-sm text-blue-200 mb-6">History aktivitas Anda di Dashboard OSIS</p>
+        <div id="activityList" class="space-y-3">
+         <div class="text-center py-8 text-blue-200">
+          <p>Belum ada aktivitas tercatat</p>
+          <p class="text-sm mt-2">Mulai gunakan fitur-fitur Dashboard OSIS!</p>
+         </div>
+        </div>
+       </div>
+      </div><!-- Report & Bug -->
+      <div id="reportSection" class="hidden">
+       <div class="card-gradient rounded-2xl p-6">
+        <h2 class="text-xl font-bold flex items-center gap-2 mb-4">🐛 Report &amp; Bug</h2>
+        <p class="text-sm text-blue-200 mb-6">Laporkan bug atau masalah yang Anda temukan</p>
+        <form id="reportForm" class="space-y-4">
+         <div><label class="block text-sm font-medium text-blue-200 mb-2">Jenis Masalah</label> <select id="bugType" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-400"> <option value="bug" class="bg-gray-800">Bug / Error</option> <option value="feature" class="bg-gray-800">Permintaan Fitur</option> <option value="ui" class="bg-gray-800">Masalah Tampilan</option> <option value="other" class="bg-gray-800">Lainnya</option> </select>
+         </div>
+         <div><label class="block text-sm font-medium text-blue-200 mb-2">Deskripsi Bug</label> <textarea id="bugDescription" rows="4" placeholder="Jelaskan bug atau masalah yang Anda temukan..." class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-400 resize-none"></textarea>
+         </div>
+         <div><label class="block text-sm font-medium text-blue-200 mb-2">Langkah untuk Mereproduksi</label> <textarea id="bugSteps" rows="3" placeholder="1. Buka halaman...\n2. Klik tombol...\n3. Bug muncul..." class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-400 resize-none"></textarea>
+         </div><button type="submit" class="w-full py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl font-semibold transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg> Kirim Laporan </button>
+         <p class="text-xs text-center text-blue-200">Laporan akan dikirim ke: votingosiscenter@gmail.com</p>
+        </form>
+        <div id="reportSuccess" class="hidden mt-6 p-4 bg-green-500/20 border border-green-500/30 rounded-xl text-center"><span class="text-2xl">✅</span>
+         <p class="font-medium mt-2">Laporan berhasil dikirim!</p>
+         <p class="text-sm text-green-200">Terima kasih atas masukan Anda</p>
+        </div>
+       </div>
+      </div>
+     </main>
+    </div>
+   </div>
+  </div>
+  <script>
+    // State Management
+    let currentUser = '';
+    let activities = [];
+    let config = {};
+    
+    const defaultConfig = {
+      dashboard_title: 'Dashboard OSIS',
+      welcome_text: 'Selamat Datang di Dashboard OSIS'
+    };
+
+    // Data SDK Handler
+    const dataHandler = {
+      onDataChanged(data) {
+        activities = data.filter(item => item.user_name === currentUser);
+        renderActivities();
+      }
+    };
+
+    // Initialize SDKs
+    async function initApp() {
+      // Initialize Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (cfg) => {
+            config = cfg;
+            updateUIFromConfig();
+          },
+          mapToCapabilities: (cfg) => ({
+            recolorables: [],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['dashboard_title', cfg.dashboard_title || defaultConfig.dashboard_title],
+            ['welcome_text', cfg.welcome_text || defaultConfig.welcome_text]
+          ])
+        });
+        config = window.elementSdk.config || defaultConfig;
+      } else {
+        config = defaultConfig;
+      }
+      
+      // Initialize Data SDK
+      if (window.dataSdk) {
+        await window.dataSdk.init(dataHandler);
+      }
+      
+      updateUIFromConfig();
+    }
+
+    function updateUIFromConfig() {
+      const title = config.dashboard_title || defaultConfig.dashboard_title;
+      const welcome = config.welcome_text || defaultConfig.welcome_text;
+      
+      document.getElementById('loginTitle').textContent = title;
+      document.getElementById('dashboardTitle').textContent = title;
+      document.getElementById('welcomeText').textContent = welcome;
+    }
+
+    // Login Handler
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('userName');
+      currentUser = nameInput.value.trim();
+      
+      if (currentUser) {
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('dashboardPage').classList.remove('hidden');
+        document.getElementById('welcomeUser').textContent = `Halo, ${currentUser}!`;
+        
+        // Log activity
+        await logActivity('login', `${currentUser} masuk ke Dashboard OSIS`);
+      }
+    });
+
+    // Logout Handler
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      currentUser = '';
+      document.getElementById('dashboardPage').classList.add('hidden');
+      document.getElementById('loginPage').classList.remove('hidden');
+      document.getElementById('userName').value = '';
+      hideAllSections();
+      document.getElementById('welcomeSection').classList.remove('hidden');
+    });
+
+    // Submenu Navigation
+    function showSubmenu(menu) {
+      hideAllSections();
+      
+      // Update active menu state
+      document.querySelectorAll('[data-menu]').forEach(btn => {
+        btn.classList.remove('bg-white/10');
+        if (btn.getAttribute('data-menu') === menu) {
+          btn.classList.add('bg-white/10');
+        }
+      });
+      
+      switch(menu) {
+        case 'chat':
+          document.getElementById('chatSection').classList.remove('hidden');
+          break;
+        case 'search':
+          document.getElementById('searchSection').classList.remove('hidden');
+          break;
+        case 'gallery':
+          document.getElementById('gallerySection').classList.remove('hidden');
+          break;
+        case 'report':
+          document.getElementById('reportSection').classList.remove('hidden');
+          document.getElementById('reportSuccess').classList.add('hidden');
+          break;
+      }
+    }
+
+    function hideAllSections() {
+      document.getElementById('welcomeSection').classList.add('hidden');
+      document.getElementById('chatSection').classList.add('hidden');
+      document.getElementById('searchSection').classList.add('hidden');
+      document.getElementById('gallerySection').classList.add('hidden');
+      document.getElementById('reportSection').classList.add('hidden');
+    }
+
+    // Chat OSIS with Enhanced Features
+    let chatHistory = [];
+    
+    document.getElementById('chatForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      // Hide emoji picker
+      document.getElementById('emojiPicker').classList.add('hidden');
+      
+      // Add user message
+      addChatMessage(message, 'user');
+      chatHistory.push({ role: 'user', content: message });
+      input.value = '';
+      
+      // Hide quick replies after first message
+      if (chatHistory.length > 1) {
+        document.getElementById('quickReplies').classList.add('hidden');
+      }
+      
+      // Show typing indicator
+      document.getElementById('typingIndicator').classList.remove('hidden');
+      
+      // Log activity
+      await logActivity('chat', `Mengirim pesan: "${message.substring(0, 50)}..."`);
+      
+      try {
+        // Use enhanced response system
+        const response = await generateOSISResponse(message);
+        document.getElementById('typingIndicator').classList.add('hidden');
+        addChatMessage(response, 'bot');
+        chatHistory.push({ role: 'bot', content: response });
+      } catch (error) {
+        document.getElementById('typingIndicator').classList.add('hidden');
+        addChatMessage('Maaf, terjadi kesalahan. Silakan coba lagi.', 'bot');
+      }
+    });
+
+    function addChatMessage(message, type, timestamp = null) {
+      const container = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'chat-bubble flex gap-3' + (type === 'user' ? ' flex-row-reverse' : '');
+      
+      const time = timestamp || new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      const avatar = type === 'user' ? '👤' : '🤖';
+      const bgClass = type === 'user' 
+        ? 'bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg' 
+        : 'bg-gradient-to-r from-white/10 to-white/5 border border-white/10 shadow-lg';
+      const roundedClass = type === 'user' ? 'rounded-tr-none' : 'rounded-tl-none';
+      const avatarBg = type === 'user' 
+        ? 'bg-gradient-to-br from-green-400 to-green-600' 
+        : 'bg-gradient-to-br from-blue-500 to-purple-500';
+      
+      div.innerHTML = `
+        <div class="w-10 h-10 rounded-full ${avatarBg} flex items-center justify-center flex-shrink-0 shadow-lg">${avatar}</div>
+        <div class="flex flex-col max-w-[80%]">
+          <div class="${bgClass} rounded-2xl ${roundedClass} px-4 py-3">
+            <p class="text-sm leading-relaxed">${message}</p>
+          </div>
+          <span class="text-xs text-blue-300/70 mt-1 ${type === 'user' ? 'text-right' : 'text-left'}">${time}</span>
+        </div>
+      `;
+      
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Quick Reply Function
+    function sendQuickReply(message) {
+      document.getElementById('chatInput').value = message;
+      document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+    }
+
+    // Emoji Picker Functions
+    function toggleEmojiPicker() {
+      const picker = document.getElementById('emojiPicker');
+      picker.classList.toggle('hidden');
+    }
+
+    function insertEmoji(emoji) {
+      const input = document.getElementById('chatInput');
+      input.value += emoji;
+      input.focus();
+      document.getElementById('emojiPicker').classList.add('hidden');
+    }
+
+    // Clear Chat Function
+    function clearChat() {
+      const messages = document.getElementById('chatMessages');
+      const confirmed = confirm('Apakah Anda yakin ingin menghapus semua pesan?');
+      
+      if (confirmed) {
+        chatHistory = [];
+        messages.innerHTML = `
+          <div class="chat-bubble flex gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+              🤖
+            </div>
+            <div class="bg-gradient-to-r from-white/10 to-white/5 rounded-2xl rounded-tl-none px-4 py-3 max-w-[80%] shadow-lg border border-white/10">
+              <p class="text-sm leading-relaxed">Halo! 👋 Saya asisten OSIS virtual. Saya bisa membantu Anda dengan:</p>
+              <ul class="text-sm mt-2 space-y-1 ml-4">
+                <li>✨ Informasi kegiatan dan event</li>
+                <li>✨ Cara pendaftaran OSIS</li>
+                <li>✨ Struktur organisasi</li>
+                <li>✨ Jadwal dan agenda</li>
+              </ul>
+              <p class="text-sm mt-2">Silakan tanya apapun! 😊</p>
+            </div>
+          </div>
+        `;
+        document.getElementById('quickReplies').classList.remove('hidden');
+        showToast('Chat berhasil dihapus! 🗑️', 'success');
+      }
+    }
+
+    // Enhanced OSIS Response Generator with Context Awareness
+    async function generateOSISResponse(message) {
+      const lowerMessage = message.toLowerCase();
+      
+      // Simulate realistic typing delay based on response length
+      const delay = Math.random() * 1000 + 1500;
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+      // Enhanced knowledge base with more detailed responses
+      const responses = {
+        'kegiatan': {
+          text: '📅 <strong>Kegiatan OSIS Tahun Ini:</strong><br><br>1. <strong>Class Meeting</strong> - Kompetisi olahraga antar kelas<br>2. <strong>Pentas Seni</strong> - Pertunjukan seni tahunan<br>3. <strong>Bakti Sosial</strong> - Kegiatan sosial kemasyarakatan<br>4. <strong>LDKS</strong> - Pelatihan kepemimpinan<br>5. <strong>Lomba-lomba</strong> - Cerdas cermat, debat, dll<br><br>Mau tahu detail kegiatan tertentu? 😊'
+        },
+        'class meeting': {
+          text: '⚽ <strong>Class Meeting</strong><br><br>Biasanya diadakan setelah ujian semester dengan berbagai cabang lomba:<br><br>• Futsal (Putra & Putri)<br>• Basket (Putra & Putri)<br>• Voli (Putra & Putri)<br>• Badminton<br>• Catur<br>• E-Sport<br><br>Hadiah menarik untuk juara! 🏆'
+        },
+        'pentas seni': {
+          text: '🎭 <strong>Pentas Seni</strong><br><br>Acara tahunan untuk menampilkan bakat siswa:<br><br>• Drama & Teater<br>• Band & Musik<br>• Tari Tradisional & Modern<br>• Stand-up Comedy<br>• Fashion Show<br><br>Biasanya diadakan di akhir semester. Pendaftaran dibuka 2 bulan sebelumnya! 🌟'
+        },
+        'bakti sosial': {
+          text: '❤️ <strong>Program Bakti Sosial</strong><br><br>Kegiatan sosial OSIS meliputi:<br><br>• Kunjungan ke Panti Asuhan<br>• Donor Darah<br>• Penggalangan Dana Bencana<br>• Bersih-bersih Lingkungan<br>• Santunan Anak Yatim<br><br>Yuk ikut berkontribusi untuk sesama! 🤝'
+        },
+        'ldks': {
+          text: '🏕️ <strong>LDKS (Latihan Dasar Kepemimpinan Siswa)</strong><br><br>Program pelatihan untuk:<br><br>• Melatih jiwa kepemimpinan<br>• Team building<br>• Problem solving<br>• Public speaking<br><br>Durasi: 2-3 hari<br>Lokasi: Biasanya di luar sekolah (camping ground)<br><br>Wajib untuk calon pengurus OSIS! 💪'
+        },
+        'lomba': {
+          text: '🏆 <strong>Lomba-Lomba OSIS</strong><br><br>Ada berbagai kompetisi seru:<br><br>• Cerdas Cermat<br>• Debat Bahasa Indonesia/Inggris<br>• Karya Tulis Ilmiah<br>• Poster & Infografis<br>• Fotografi<br>• Video Kreatif<br><br>Tertarik ikut yang mana? Pendaftaran biasanya dibuka via Instagram OSIS! 📱'
+        },
+        'struktur': {
+          text: '👥 <strong>Struktur Organisasi OSIS</strong><br><br>• Ketua OSIS<br>• Wakil Ketua<br>• Sekretaris (1 & 2)<br>• Bendahara (1 & 2)<br><br><strong>Seksi-Seksi Bidang:</strong><br>• Keagamaan<br>• Kesenian<br>• Olahraga<br>• Lingkungan Hidup<br>• Humas & Publikasi<br>• Kewirausahaan<br><br>Setiap seksi punya koordinator dan anggota! 📋'
+        },
+        'daftar': {
+          text: '📝 <strong>Cara Daftar OSIS</strong><br><br><strong>Tahap 1: Pendaftaran</strong><br>• Ambil formulir di ruang OSIS<br>• Isi lengkap dengan data diri<br>• Lampirkan foto 3x4<br>• Surat izin orang tua<br><br><strong>Tahap 2: Seleksi</strong><br>• Seleksi administrasi<br>• Tes tertulis<br>• Wawancara<br><br><strong>Tahap 3: Pelantikan</strong><br>• Masa orientasi<br>• Pelantikan resmi<br><br>Syarat: Nilai rata-rata min. 75, tidak pernah kena sanksi! ✅'
+        },
+        'jadwal': {
+          text: '📆 <strong>Jadwal Kegiatan OSIS</strong><br><br><strong>Semester 1:</strong><br>• Agustus: Pelantikan Pengurus Baru<br>• September: LDKS<br>• Oktober: Bakti Sosial<br>• November: Lomba-lomba<br>• Desember: Class Meeting<br><br><strong>Semester 2:</strong><br>• Februari: Workshop<br>• Maret: Pentas Seni<br>• April: Donor Darah<br>• Mei: Class Meeting<br><br>Follow Instagram @osis_sekolah untuk update! 📱'
+        },
+        'pengurus': {
+          text: '👥 <strong>Tentang Pengurus OSIS</strong><br><br>Pengurus OSIS dipilih melalui seleksi ketat dan bertugas selama 1 tahun.<br><br><strong>Manfaat jadi pengurus:</strong><br>• Melatih leadership<br>• Menambah relasi<br>• Pengalaman organisasi<br>• Portofolio untuk kuliah<br>• Sertifikat resmi<br><br>Jam kerja: Setiap hari setelah pulang sekolah (flexible). Yuk bergabung! 🚀'
+        },
+        'halo': 'Halo juga! 👋 Ada yang bisa saya bantu seputar OSIS? Saya siap membantu kapan saja! 😊',
+        'hai': 'Hai! 👋 Senang bisa membantu. Mau tanya tentang kegiatan OSIS apa?',
+        'terima kasih': 'Sama-sama! 😊 Jangan ragu untuk bertanya lagi ya! Saya selalu siap membantu. 👍',
+        'thanks': 'You\'re welcome! 😊 Kalau ada yang mau ditanyakan lagi, jangan sungkan ya!',
+        'siapa': 'Saya adalah asisten virtual OSIS yang siap membantu 24/7! 🤖 Saya bisa menjawab pertanyaan tentang kegiatan, struktur, dan informasi OSIS lainnya. Ada yang bisa saya bantu? 😊',
+        'bantuan': '💡 <strong>Saya bisa membantu dengan:</strong><br><br>• Informasi kegiatan OSIS<br>• Cara pendaftaran<br>• Struktur organisasi<br>• Jadwal event<br>• Tips & trik<br><br>Silakan tanya apapun! 😊',
+        'contact': '📞 <strong>Kontak OSIS</strong><br><br>• Instagram: @osis_sekolah<br>• Email: osis@sekolah.sch.id<br>• Ruang OSIS: Lantai 2, Gedung B<br>• Jam operasional: 12:00 - 15:00<br><br>Atau hubungi langsung ketua OSIS di kelas! 📱',
+        'default': 'Terima kasih atas pertanyaannya! 😊<br><br>Saya bisa membantu dengan informasi tentang:<br>• Kegiatan OSIS<br>• Struktur organisasi<br>• Cara pendaftaran<br>• Event yang akan datang<br><br>Silakan tanya lebih spesifik atau pilih pertanyaan cepat di atas! 💬'
+      };
+      
+      // Check for keywords in message
+      for (const [key, value] of Object.entries(responses)) {
+        if (key !== 'default' && lowerMessage.includes(key)) {
+          return typeof value === 'object' ? value.text : value;
+        }
+      }
+      
+      // Contextual responses based on conversation flow
+      if (chatHistory.length > 2) {
+        const lastBotMessage = chatHistory[chatHistory.length - 1].content;
+        
+        if (lastBotMessage.includes('Mau tahu detail kegiatan tertentu') && 
+            (lowerMessage.includes('ya') || lowerMessage.includes('mau') || lowerMessage.includes('iya'))) {
+          return '👍 Oke! Silakan sebutkan kegiatan yang ingin Anda ketahui lebih detail. Misalnya: "Class Meeting", "Pentas Seni", "LDKS", atau "Bakti Sosial"? 😊';
+        }
+        
+        if (lastBotMessage.includes('Tertarik ikut yang mana') && 
+            (lowerMessage.includes('ya') || lowerMessage.includes('mau') || lowerMessage.includes('tertarik'))) {
+          return '🎉 Bagus! Untuk mendaftar lomba, kamu bisa:<br><br>1. Follow Instagram OSIS<br>2. Tunggu pengumuman pendaftaran<br>3. Isi formulir online<br>4. Siapkan berkas yang dibutuhkan<br><br>Pendaftaran biasanya dibuka 1 bulan sebelum acara! 📝';
+        }
+      }
+      
+      // Handle greetings in different times
+      const hour = new Date().getHours();
+      if (lowerMessage.includes('pagi')) {
+        return `Selamat pagi! ☀️ Semangat untuk hari ini! Ada yang bisa saya bantu tentang OSIS?`;
+      }
+      if (lowerMessage.includes('siang')) {
+        return `Selamat siang! 🌤️ Semoga harimu menyenangkan! Ada pertanyaan tentang OSIS?`;
+      }
+      if (lowerMessage.includes('sore') || lowerMessage.includes('malam')) {
+        return `Selamat ${hour < 18 ? 'sore' : 'malam'}! 🌙 Ada yang bisa saya bantu tentang OSIS?`;
+      }
+      
+      return responses['default'];
+    }
+
+    // Close emoji picker when clicking outside
+    document.addEventListener('click', function(e) {
+      const picker = document.getElementById('emojiPicker');
+      const emojiBtn = document.querySelector('[onclick="toggleEmojiPicker()"]');
+      
+      if (picker && !picker.contains(e.target) && e.target !== emojiBtn) {
+        picker.classList.add('hidden');
+      }
+    });
+
+    // Search Event
+    document.getElementById('searchForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const query = document.getElementById('searchInput').value.trim();
+      if (query) {
+        await searchEvent(query);
+      }
+    });
+
+    async function searchEvent(query) {
+      document.getElementById('searchInput').value = query;
+      
+      // Log activity
+      await logActivity('search', `Mencari event: "${query}"`);
+      
+      // Show results section
+      const resultsDiv = document.getElementById('searchResults');
+      const resultsContent = document.getElementById('searchResultsContent');
+      resultsDiv.classList.remove('hidden');
+      
+      // Generate search results
+      const results = generateSearchResults(query);
+      resultsContent.innerHTML = results.map(result => `
+        <a href="https://www.google.com/search?q=${encodeURIComponent(query + ' event sekolah OSIS')}" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="block p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">${result.icon}</span>
+            <div class="flex-1">
+              <h4 class="font-medium">${result.title}</h4>
+              <p class="text-sm text-blue-200 mt-1">${result.description}</p>
+              <p class="text-xs text-green-400 mt-2">Klik untuk cari di Google →</p>
+            </div>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    function generateSearchResults(query) {
+      return [
+        {
+          icon: '📅',
+          title: `Event "${query}" - Jadwal & Informasi`,
+          description: `Cari informasi lengkap tentang ${query} di sekolah-sekolah Indonesia`
+        },
+        {
+          icon: '📝',
+          title: `Panduan Pelaksanaan ${query}`,
+          description: `Tips dan panduan untuk mengadakan ${query} yang sukses`
+        },
+        {
+          icon: '🎯',
+          title: `Contoh Proposal ${query}`,
+          description: `Template dan contoh proposal kegiatan ${query} OSIS`
+        }
+      ];
+    }
+
+    // Report & Bug Form
+    document.getElementById('reportForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const bugType = document.getElementById('bugType').value;
+      const description = document.getElementById('bugDescription').value.trim();
+      const steps = document.getElementById('bugSteps').value.trim();
+      
+      if (!description) {
+        showInlineMessage('reportForm', 'Mohon isi deskripsi bug!', 'error');
+        return;
+      }
+      
+      // Create mailto link
+      const subject = encodeURIComponent(`[${bugType.toUpperCase()}] Bug Report - Dashboard OSIS`);
+      const body = encodeURIComponent(
+        `Nama Pengguna: ${currentUser}\n\n` +
+        `Jenis Masalah: ${bugType}\n\n` +
+        `Deskripsi:\n${description}\n\n` +
+        `Langkah Reproduksi:\n${steps || 'Tidak disertakan'}\n\n` +
+        `Waktu: ${new Date().toLocaleString('id-ID')}`
+      );
+      
+      // Open email client
+      window.open(`mailto:votingosiscenter@gmail.com?subject=${subject}&body=${body}`, '_blank');
+      
+      // Log activity
+      await logActivity('report', `Mengirim laporan bug: ${bugType}`);
+      
+      // Show success
+      document.getElementById('reportSuccess').classList.remove('hidden');
+      
+      // Reset form
+      document.getElementById('bugDescription').value = '';
+      document.getElementById('bugSteps').value = '';
+    });
+
+    function showInlineMessage(formId, message, type) {
+      const form = document.getElementById(formId);
+      let msgDiv = form.querySelector('.inline-message');
+      
+      if (!msgDiv) {
+        msgDiv = document.createElement('div');
+        msgDiv.className = 'inline-message';
+        form.insertBefore(msgDiv, form.firstChild);
+      }
+      
+      msgDiv.className = `inline-message p-3 rounded-lg mb-4 ${type === 'error' ? 'bg-red-500/20 text-red-300' : 'bg-green-500/20 text-green-300'}`;
+      msgDiv.textContent = message;
+      
+      setTimeout(() => msgDiv.remove(), 3000);
+    }
+
+    // Activity Logging
+    async function logActivity(type, content) {
+      if (!window.dataSdk || !currentUser) return;
+      
+      if (activities.length >= 999) {
+        console.log('Activity limit reached');
+        return;
+      }
+      
+      const activity = {
+        id: Date.now().toString(),
+        type: type,
+        user_name: currentUser,
+        content: content,
+        timestamp: new Date().toISOString()
+      };
+      
+      try {
+        await window.dataSdk.create(activity);
+      } catch (error) {
+        console.error('Failed to log activity:', error);
+      }
+    }
+
+    // Render Activities
+    function renderActivities() {
+      const container = document.getElementById('activityList');
+      
+      if (activities.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-blue-200">
+            <p>Belum ada aktivitas tercatat</p>
+            <p class="text-sm mt-2">Mulai gunakan fitur-fitur Dashboard OSIS!</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const sortedActivities = [...activities].sort((a, b) => 
+        new Date(b.timestamp) - new Date(a.timestamp)
+      );
+      
+      const icons = {
+        login: '🚀',
+        chat: '💬',
+        search: '🔍',
+        report: '🐛'
+      };
+      
+      container.innerHTML = sortedActivities.map(activity => {
+        const date = new Date(activity.timestamp);
+        const timeString = date.toLocaleString('id-ID', {
+          day: 'numeric',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        return `
+          <div class="flex items-start gap-3 p-4 bg-white/5 rounded-xl">
+            <span class="text-2xl">${icons[activity.type] || '📌'}</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm">${activity.content}</p>
+              <p class="text-xs text-blue-200 mt-1">${timeString}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Initialize
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bedecf6f7033e59',t:'MTc2ODU2OTc4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
